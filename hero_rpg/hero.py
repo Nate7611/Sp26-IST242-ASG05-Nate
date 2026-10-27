@@ -74,6 +74,7 @@ class Hero:
         """
         actual = min(max(amount, 0), self.max_health - self.health)
         self.health += actual
+        self.combat_log.append(f"healed {amount} HP")
         return actual
 
     def is_alive(self) -> bool:
