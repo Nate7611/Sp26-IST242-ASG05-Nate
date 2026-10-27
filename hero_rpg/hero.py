@@ -130,18 +130,18 @@ class Hero:
         Record defeating an enemy.
         Counter accumulates each enemy type; no manual initialization needed.
         """
-        pass
+        self.kill_counter[enemy_type] += 1
 
     def total_damage_potential(self) -> int:
         """Sum damage of all currently equipped weapons."""
-        pass
+        return sum(weapon.damage for weapon in self.equipped_weapons.all())
 
     def top_kills(self, n: int = 3) -> list[tuple[str, int]]:
         """
         Return the top N most-killed enemy types.
         Counter.most_common() returns them in descending order of count.
         """
-        pass
+        return self.kill_counter.most_common(n)
 
     # ── Stats ─────────────────────────────────────────────────────────────────
 
@@ -152,4 +152,7 @@ class Hero:
         Returns:
             True if stat exists and was upgraded; False if key not found.
         """
-        pass
+        if stat not in self.stats:
+            return False
+        self.stats[stat] += amount
+        return True
