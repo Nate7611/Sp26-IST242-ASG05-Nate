@@ -116,7 +116,7 @@ class Hero:
         """
         if not self.inventory.add(item):
             return False
-        self._item_registry[item.item_type.name].append(item)
+        self._item_registry[item.item_type.value].append(item)
         return True
 
     def items_by_type(self) -> dict[str, list[Item]]:
