@@ -31,8 +31,26 @@ class Hero:
     """
 
     def __init__(self, name: str, hero_class: str, max_health: int = 100) -> None:
-        pass
-
+        self.name: str = name
+        self.hero_class: str = hero_class
+        self.max_health: int = max_health
+        self.health: int = max_health
+ 
+        self.inventory: Bag[Item] = Bag(capacity=20)
+        self.equipped_weapons: Bag[Weapon] = Bag(capacity=3)
+ 
+        self.skills: set[str] = set()
+        self.stats: dict[str, int] = {
+            "strength": 10,
+            "dexterity": 10,
+            "intelligence": 10,
+            "defense": 5,
+        }
+ 
+        self.kill_counter: Counter[str] = Counter()
+        self._item_registry: defaultdict[str, list[Item]] = defaultdict(list)
+        self.combat_log: deque[str] = deque(maxlen=10)
+ 
     # ── Health ────────────────────────────────────────────────────────────────
 
     def take_damage(self, amount: int) -> int:
@@ -42,7 +60,9 @@ class Hero:
         Returns:
             Actual HP lost (may be less than `amount` near death).
         """
-        pass
+        actual = min(max(amount, 0), self.health)
+        self.health -= actual
+        return actual
 
     def heal(self, amount: int) -> int:
         """
@@ -51,7 +71,9 @@ class Hero:
         Returns:
             Actual HP restored (may be less if already near full).
         """
-        pass
+        actual = min(max(amount, 0), self.max_health - self.health)
+        self.health += actual
+        return actual
 
     def is_alive(self) -> bool:
         """Return True as long as health is above zero."""
@@ -66,7 +88,7 @@ class Hero:
         Returns:
             True if equipped; False if weapon slots are full.
         """
-        pass
+        return self.equipped_weapons.add(weapon)
 
     def learn_skill(self, skill: str) -> bool:
         """
@@ -75,7 +97,10 @@ class Hero:
         Returns:
             True if new skill; False if already known.
         """
-        pass
+        if skill in self.skills:
+            return False
+        self.skills.add(skill)
+        return True
 
     # ── Inventory ─────────────────────────────────────────────────────────────
 
@@ -86,14 +111,17 @@ class Hero:
         Returns:
             True if added; False if inventory is full.
         """
-        pass
+        if not self.inventory.add(item):
+            return False
+        self._item_registry[item.item_type.name].append(item)
+        return True
 
     def items_by_type(self) -> dict[str, list[Item]]:
         """
         Return items grouped by ItemType name as a plain dict copy.
         Callers cannot mutate the internal defaultdict directly.
         """
-        pass
+        return {name: list(items) for name, items in self._item_registry.items()}
 
     # ── Combat & Kill Tracking ────────────────────────────────────────────────
 
