@@ -62,6 +62,7 @@ class Hero:
         """
         actual = min(max(amount, 0), self.health)
         self.health -= actual
+        self.combat_log.append(f"took {amount} damage")
         return actual
 
     def heal(self, amount: int) -> int:
